@@ -3,17 +3,8 @@
 
 ;;; purpose
  
-; to generate the provide form from a module file
- 
-; parse every define form, use (read) and pick the first list item or function name
-; must be some form of syntax parser, say
-; build a copy of the definition with (function param param ...) which is the second item in the define form syntax list
-
-; a better way would be to edit the syntax and delete the function bodies.
-; and syntax->string to convert the resulting syntax-list back into a string with indentation etc.
-; 1) read source to syntax list
-; 2) map recursive function to produce syntax list without function body
-; 3) save with syntax->string.b
+; To generate the provide form from a module file.
+; A better way would be to edit the syntax and delete the function bodies, but I'm not that great with dealing with syntax yet.
 
 ;;; defs
 
