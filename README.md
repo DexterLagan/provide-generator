@@ -10,8 +10,7 @@ How to use:
 
 Sample provide from provide-generator source itself:
 
-<code>
-(provide all-but-last                 ; (all-but-last l)
+<pre><code>(provide all-but-last                 ; (all-but-last l)
          close-parenthesis            ; (close-parenthesis pre-indentation l post-indentation)
          composex                     ; (composex stx) [MACRO]
          generate-provide-form        ; (generate-provide-form stx-lines indentation)
@@ -22,5 +21,4 @@ Sample provide from provide-generator source itself:
          get-stx-lines                ; (get-stx-lines s)
          println                      ; (println s)
          set-clipboard                ; (set-clipboard s)
-         stx->str)                    ; (stx->str stx)
-</code>
+         stx->str)                    ; (stx->str stx)</code></pre>
