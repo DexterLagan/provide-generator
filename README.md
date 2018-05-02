@@ -4,7 +4,7 @@ Racket Provide Generator
 Generates a pretty provide form for Racket modules.
 
 <b>How to compile:</b>
-Compile to standalone binary using Racket 6.11 or newer.
+compile to standalone binary using Racket 6.11 or newer.
 
 <b>How to use:</b>
 1) Copy the contents of your module's source into the clipboard;
