@@ -7,11 +7,11 @@ Generates a pretty provide form for Racket modules.
 Compile to standalone binary using Racket 6.11 or newer.
 
 <b>How to use:</b>
-1) Copy the contents of your module source into the clipboard;
+1) Copy the contents of your module's source into the clipboard;
 2) Launch provide-generator;
 3) Paste the newly generated provide form into your module.
 
-Sample provide from provide-generator source itself:
+Sample provide form generated from its own source:
 
 <pre><code>(provide all-but-last                 ; (all-but-last l)
          close-parenthesis            ; (close-parenthesis pre-indentation l post-indentation)
