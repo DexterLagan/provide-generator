@@ -150,3 +150,4 @@
        (provide-form (generate-provide-form stx-lines indentation)))                             ; process syntax lines and generate the provide form
   (set-clipboard provide-form))                                                                  ; and dump the form into the cliboard.
 
+; EOF
