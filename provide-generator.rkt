@@ -1,43 +1,49 @@
 #lang racket/gui
-(require rackunit)
+(module+ test
+  (require rackunit))
 
 ;;; purpose
  
 ; To generate the provide form from a module file.
 ; A better way would be to edit the syntax and delete the function bodies, but I'm not that great with dealing with syntax yet.
 
+;;; consts
+
+(define *app-name* "Provide Generator")
+
 ;;; defs
 
+;; macro to compose functions passing an 'x' parameter
 (define-syntax (composex stx)
-  ; macro to compose functions passing an 'x' parameter
   (syntax-case stx ()
     ((_ f1 ...)
      (with-syntax ([x-var (datum->syntax stx 'x)])
        #'(compose1 (λ (x-var) f1) ...)))))
 ; unit test
-(check-equal? ((composex (string-replace x " " "-")
+(module+ test
+  (check-equal? ((composex (string-replace x " " "-")
                          (string-downcase x)
                          (string-trim x)) "Naice Day")
-              "naice-day")
+              "naice-day"))
 
+;; returns the contents of the clipboard
 (define (get-clipboard)
-  ; returns the contents of the clipboard
   (send the-clipboard get-clipboard-string (current-milliseconds)))
 
+;; sets the clipboard with the provided string
 (define (set-clipboard s)
-  ; sets the clipboard with the provided string
   (send the-clipboard set-clipboard-string s (current-milliseconds)))
 
+;; returns a list of syntax objects from the provided string
 (define (get-stx-lines s)
-  ; returns a list of syntax objects from the provided string
-  (syntax->list (with-input-from-string (string-append "(" (string-replace s "#lang racket/gui" "") ")") read-syntax)))
+  (syntax->list (with-input-from-string (string-append "(" (string-join (cdr (string-split s "\n")) "\n") ")") read-syntax)))
 
+;; converts a syntax object to string with no extra info
 (define (stx->str stx)
-  ; converts a syntax object to string with no extra info
   (~a (syntax->datum stx)))
 
+;; extract the possible function name of a line
 (define (get-function-macro-name stx-line)
-  ; extract the possible function name of a line
   (let ((syntax-list        (syntax->list stx-line)))
     (if (and syntax-list (>= (length syntax-list) 2))                                 ; make sure syntax list contains at least two objects
         (let* ((2nd         (second   syntax-list))
@@ -50,18 +56,18 @@
                 (else "")))
         "")))
 
+;; returns the length of the longest string in list l
 (define (get-length-of-longest-string l)
-  ; returns the length of the longest string in list l
   (if (and (list? l) (string? (car l)))
       (apply max (map string-length l))
       0))
 
+;; prints a non-empty line with carriage return
 (define (println s)
-  ; prints a non-empty line with carriage return
   (if (non-empty-string? s) (string-append s "\n") ""))
 
+;; returns a complete provide line as string from a single syntax line
 (define (generate-provide-line stx-line indentation)
-  ; returns a complete provide line as string from a single syntax line
   (let ((syntax-list         (syntax->list stx-line)))
     (if (and syntax-list (>= (length syntax-list) 2))                                      ; make sure syntax list contains at least two objects
         (let* ((1st          (first    syntax-list))
@@ -80,12 +86,7 @@
                         (space-length    (if (>= indentation function-length)
                                              (- indentation function-length) 0))
                         (spacer          (make-string space-length #\space)))              ; extract function name
-                   (string-append provide-indent function-name spacer " ; " 2nd-string macro-tag-maybe))   ; return function name followed by function def.
-                 ; (let* ((3rd         (third    syntax-list))
-;                          (3rd-string  (stx->str 3rd)))
-;                     (string-append 2nd-string " ; = " 3rd-string))
-      ; possible way of handling variable definitions
-                 )
+                   (string-append provide-indent function-name spacer " ; " 2nd-string macro-tag-maybe))) ; return function name followed by function def.
                 ((and macro? (not param-list?))                                            ; if this is a macro definition with no parameter definition
                  (let* ((macro-name 2nd-string)
                         (macro-length (string-length macro-name))
@@ -96,8 +97,8 @@
                 (else "")))
         "")))
 
+;; adds a parenthesis after the last item in a list of code lines, before its comment
 (define (close-parenthesis pre-indentation l post-indentation)
-  ; adds a parenthesis after the last item in a list of code lines, before its comment
   (let* ((last-line-clean (string-trim (last l)))
          (last-word       (first (string-split last-line-clean " ")))
          (last-comment    (if (string-contains? last-line-clean ";")
@@ -112,27 +113,14 @@
          (most-words      (all-but-last l)))
     (append most-words (list new-word))))
 
+;; returns all but the last elements of a list
 (define (all-but-last l)
-  ; returns all but the last elements of a list
   (if (and (list? l) (>= (length l) 2))
       (reverse (cdr (reverse l)))
       l))
 
-; ; the old ugly generate-provide-form without composex
-; (define (generate-provide-form stx-lines indentation)
-;   ; returns a complete provide form from the provided syntax lines
-;   (string-replace
-;    (string-append "(provide "
-;                   (apply string-append (map println
-;                                             (sort (map (λ (stx-line) (generate-provide-line stx-line indentation))
-;                                                        stx-lines)
-;                                                   string<?)))
-;                   ")")
-;    "(provide          " "(provide "))
-
-
+;; returns a complete provide form from the provided syntax lines
 (define (generate-provide-form stx-lines indentation)
-  ; returns a complete provide form from the provided syntax lines
   (let ((generate-lines (λ (stx-line) (generate-provide-line stx-line indentation))))  ; prepare a function to generate lines,
     ((composex (string-replace x "(provide          " "(provide ")                     ; remove extra indentation on first line
                (string-append "(provide " x)                                           ; add provide form header
@@ -149,5 +137,6 @@
        (indentation  (get-length-of-longest-string    (map get-function-macro-name stx-lines)))  ; calculate the lendth of the longest function name
        (provide-form (generate-provide-form stx-lines indentation)))                             ; process syntax lines and generate the provide form
   (set-clipboard provide-form))                                                                  ; and dump the form into the cliboard.
+
 
 ; EOF
