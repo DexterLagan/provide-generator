@@ -36,8 +36,14 @@
 
 ;; returns a list of syntax objects from the provided string
 (define (get-stx-lines s)
-  (syntax->list (with-input-from-string (string-append "(" (string-join (cdr (string-split s "\n")) "\n") ")") read-syntax)))
-
+  (define lang-less-forms
+    (string-append "("
+                   (string-join (cdr (string-split s "\n")) "\n")
+                   "\n)"))
+  (void (message-box *app-name* lang-less-forms))
+  (syntax->list
+   (with-input-from-string lang-less-forms read-syntax)))
+   
 ;; converts a syntax object to string with no extra info
 (define (stx->str stx)
   (~a (syntax->datum stx)))
