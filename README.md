@@ -7,9 +7,9 @@ Generates a pretty provide form for Racket modules.
 compile to standalone binary using Racket 6.11 or newer.
 
 <h2>How to use:</h2>
-- 1) Copy the contents of your module's source into the clipboard;
-- 2) Launch provide-generator;
-- 3) Paste the newly generated provide form into your module.
+1) Copy the contents of your module's source into the clipboard;<br>
+2) Launch provide-generator;<br>
+3) Paste the newly generated provide form into your module.
 
 <h2>Sample Output:</h2>
 
